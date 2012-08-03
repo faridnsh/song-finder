@@ -6,7 +6,7 @@
   "repository": {
     "url": "git://github.com/alFReD-NSH/song-finder"
   },
-  "main": "finder.js",
+  "main": "find.js",
   "dependencies": {
     "async" : "0.1.x",
     "request" : "2.x",
