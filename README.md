@@ -1,6 +1,4 @@
-This is node module or script that gets songs.
-
-If you didn't understand how does it work from description and wanna know more just do the following.
+This is nodejs module or script that gets songs of a user from last.fm that have been listened more than 3 times and outputs them categorized by album.
 
 ## How to get
 
@@ -14,13 +12,13 @@ Just execute it with node, or use it from a module.
 
 ### In terminal
 
-When first time running it asks for username and api, and saves it to a local config.json file.
+When first time running it asks for username and api, and saves it to a local config.json file. It pipes each album as a JSON object, each delimited by a new line character.
 
     node find.js
 
 ### or in node
 
-Just give it an object having `username` and `api` and it returns you a full featured readable stream.
+Just give it an object having `username` and `api` and it returns you a full featured readable stream of `album` javascript objects. 
 
     var songFiner = require('song-finder');
 
@@ -32,6 +30,13 @@ Just give it an object having `username` and `api` and it returns you a full fea
         .on('error', function (e) {
                throw e;
         });
+    
+Each album object contains the following properties.
+
+* name `String`
+* artist `String`
+* tracks `Array<String>`
+
 ## FAQ
 
 ### Why streams and all the http abuse?
