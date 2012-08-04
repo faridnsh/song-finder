@@ -30,15 +30,19 @@ Just give it an object having `username` and `api` and it returns you a full fea
         .on('error', function (e) {
                throw e;
         });
-    
+
 Each album object contains the following properties.
 
 * name `String`
 * artist `String`
 * tracks `Array<String>`
 
+Note that this module uses [`sugar`](http://sugarjs.com/) module and it extends Object prototypes(in a cool way, completely compatible, no worries). If you require it, you project Object prototypes will be extended. If you think its not cool, tell me I change it(probably will use [`lodash`](https://github.com/bestiejs/lodash/) instead, but only if there's a demand for it.)
+
+Same thing will go to the fact that's been written with coffee script. I can change it to js, if there's a demand.
+
 ## FAQ
 
 ### Why streams and all the http abuse?
 
-Becuase I don't wanna run out of memory coz some kid listened to a lot of songs! Streams are cool and fast(somtimes). And I wanted to play with some of @dominictarr awesome modules.
+Becuase I don't wanna run out of memory coz some kid listened to a lot of songs! Streams are cool and fast(somtimes). And I wanted to play with some of [@dominictarr](https://github.com/dominictarr) awesome modules.
