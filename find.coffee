@@ -9,10 +9,6 @@ Object.extend()
 
 config = {}
 
-errorHandler = (e) ->
-    console.error e.stack
-    process.exit()
-
 # This is a helper function to get a stream of last.fm call.
 libGet = (type, options={}) ->
     method = 'library.get' + type.capitalize() + 's'
@@ -30,15 +26,14 @@ libGet = (type, options={}) ->
 
     jstream = JSONStream.parse([type + 's', type, true])
 
-    
     es.connect(
         req,
         jstream,
         es.mapSync (data) ->
             return if data.playcount > 3 then data.name # else null
-    ).on 'error', errorHandler
+    )
 
-start = ->
+start = () ->
     artistS = libGet 'artist'
 
     addAlbumWrite = (artist) ->
@@ -65,17 +60,9 @@ start = ->
             this.emit 'end'
 
     addAlbum = es.through addAlbumWrite, addAlbumEnd
-    
-    es.connect(artistS, addAlbumEnd, JSONStream.stringify(false),
-            process.stdout).on 'err', errorHandler
+    es.connect(artistS, addAlbum)
 
-# First we get the config and then run the start function
-try
-    config = require './config.json'
-    start()
-catch e
-    if not e.message.has './config.json'
-        return errorHandler e
+ask = (cb = ->) ->
     console.log "Seems you don't have a config.json file let's make one!"
     rl = require('readline').createInterface process.stdin, process.stdout, null
     fs = require 'fs'
@@ -83,18 +70,42 @@ catch e
 your credentials"
     
     questions =
-        api : 'Paste your API KEY here:'
-        username : 'Now tell us your username:'
+        api : 'Paste your API KEY here'
+        username : 'Now tell us your username'
 
     questions.each (key, question) ->
+        if Object.has config, key
+           question += ' (' + config[key] + ') :'
         questions[key] = (cb) ->
             rl.question question, (a) -> cb null, a
 
     async.series questions, (err, res) ->
-        config = res.each processAnswer(key, value) ->
-            if value
-                value = value.trim()
-                if value.lengh
-                    res[key] = value
+        config = res.each (key, value = '') ->
+            value = value.trim()
+            if value.lengh
+                config[key] = value
         fs.writeFileSync './config.json', JSON.stringify(config), 'utf8'
-        start()
+        cb()
+
+if not module.parent
+    oldStart = start
+    start = (config) ->
+        es.connect(oldStart(config), JSONStream.stringify(false),
+            process.stdout)
+        .on 'err', (e) -> throw e
+
+    # First we get the config and then run the start function
+    try
+        config = require './config.json'
+    catch e
+        if not e.message.has 'config.json' then throw e
+        config = {}
+
+    start = start.bind null, config
+
+    if config.api and config.username
+        start(config)
+    else
+        ask start
+else
+    module.exports = start

@@ -1,7 +1,7 @@
 {
   "author": "alFReD NSH <Farid Neshat>",
   "name": "song-finder",
-  "description": "Finds songs that you have listened more than 3 times from last.fm and pipes a new line delimited JSON stream of categorized by album",
+  "description": "Finds songs that you have listened more than 3 times from last.fm as readable stream",
   "version": "0.0.1",
   "repository": {
     "url": "git://github.com/alFReD-NSH/song-finder"
